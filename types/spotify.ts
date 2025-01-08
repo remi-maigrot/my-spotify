@@ -2,6 +2,7 @@ export interface Track {
   id: string;
   name: string;
   artists: Array<{
+    id: string,
     name: string;
   }>;
   album: {

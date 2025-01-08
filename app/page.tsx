@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search, Plus, Trash2, Music } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,23 +8,15 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MusicPlayer } from '@/components/MusicPlayer';
 import { usePlaylist } from '@/hooks/usePlaylist';
-import { searchTracks, getRecommendations } from '@/lib/spotify';
+import { searchTracks } from '@/lib/spotify';
 import { Track } from '@/types/spotify';
+import { Recommendations } from '@/components/Recommendations';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Track[]>([]);
-  const [recommendations, setRecommendations] = useState<Track[]>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const { playlist, addToPlaylist, removeFromPlaylist } = usePlaylist();
-
-  useEffect(() => {
-    if (playlist.length > 0) {
-      fetchRecommendations();
-    } else {
-      setRecommendations([]);
-    }
-  }, [playlist]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -34,19 +26,6 @@ export default function Home() {
     } catch (error) {
       console.error('Error searching tracks:', error);
       setSearchResults([]);
-    }
-  };
-
-  const fetchRecommendations = async () => {
-    try {
-      const seedTracks = playlist.slice(0, 5).map(track => track.id);
-      if (seedTracks.length === 0) return;
-      
-      const data = await getRecommendations(seedTracks);
-      setRecommendations(data.tracks || []);
-    } catch (error) {
-      console.error('Error fetching recommendations:', error);
-      setRecommendations([]);
     }
   };
 
@@ -60,7 +39,7 @@ export default function Home() {
       <div className="flex-1 min-w-0">
         <h3 className="font-medium truncate">{track.name}</h3>
         <p className="text-sm text-muted-foreground truncate">
-          {track.artists.map(a => a.name).join(', ')}
+          {track.artists.map((a) => a.name).join(', ')}
         </p>
       </div>
       <div className="flex items-center gap-2">
@@ -80,7 +59,7 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <main className="max-w-7xl mx-auto p-6">
         <h1 className="text-4xl font-bold mb-8">MySpotify</h1>
-        
+
         <div className="flex gap-4 mb-8">
           <Input
             placeholder="Search for tracks..."
@@ -102,39 +81,35 @@ export default function Home() {
           </TabsList>
 
           <TabsContent value="search" className="space-y-4">
-            {searchResults.map(track => renderTrackCard(track, (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => addToPlaylist(track)}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            )))}
+            {searchResults.map((track) =>
+              renderTrackCard(track, (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => addToPlaylist(track)}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              ))
+            )}
           </TabsContent>
 
           <TabsContent value="playlist" className="space-y-4">
-            {playlist.map(track => renderTrackCard(track, (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => removeFromPlaylist(track.id)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )))}
+            {playlist.map((track) =>
+              renderTrackCard(track, (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeFromPlaylist(track.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              ))
+            )}
           </TabsContent>
 
           <TabsContent value="recommendations" className="space-y-4">
-            {recommendations.map(track => renderTrackCard(track, (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => addToPlaylist(track)}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            )))}
+            <Recommendations tracks={searchResults} />
           </TabsContent>
         </Tabs>
       </main>

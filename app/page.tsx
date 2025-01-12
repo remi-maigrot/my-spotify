@@ -17,6 +17,7 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<Track[]>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const { playlist, addToPlaylist, removeFromPlaylist } = usePlaylist();
+  const [accessToken, setAccessToken] = useState<string>('YOUR_SPOTIFY_ACCESS_TOKEN'); // Remplacez par un jeton valide
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -111,10 +112,16 @@ export default function Home() {
           <TabsContent value="recommendations" className="space-y-4">
             <Recommendations tracks={searchResults} />
           </TabsContent>
+          
         </Tabs>
-      </main>
 
-      <MusicPlayer track={currentTrack} />
+        {/* Affichage du lecteur Spotify */}
+        {accessToken ? (
+          <MusicPlayer track={currentTrack} accessToken={accessToken} />
+        ) : (
+          <p>Veuillez vous connecter pour lire les pistes.</p>
+        )}
+      </main>
     </div>
   );
 }

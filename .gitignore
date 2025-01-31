@@ -1,57 +1,35 @@
-# Node modules\ nnode_modules/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Build outputs
-.next/
-out/
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-# Environment variables
-.env
-.env.local
-.env.*.local
+# testing
+/coverage
 
-# Logs
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Test coverage
-coverage/
+# local env files
+.env*.local
 
-# Optional: OS-specific files
-.DS_Store
-Thumbs.db
+# vercel
+.vercel
 
-# Vercel deployment
-.vercel/
-
-# Typescript build cache
+# typescript
 *.tsbuildinfo
-
-# Linter and editor settings
-.eslintcache
-*.vscode
-
-# Temporary files
-*.swp
-*.swo
-
-# Ignore generated files from testing
-.jest/
-*.log
-
-# Next.js static cache
-.next/cache/
-
-# Ignore build artifacts
-dist/
-
-# Ignore local development server logs
-.next/trace
-
-# Avoid uploading yarn and pnpm locks if using npm
-yarn.lock
-pnpm-lock.yaml
-
-# If you're using Docker
-docker-compose.override.yml
-.dockerignore
+next-env.d.ts

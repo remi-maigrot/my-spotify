@@ -1,54 +1,52 @@
-import { Track } from '@/types/spotify';
-
-const SPOTIFY_API = 'https://api.spotify.com/v1';
+const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
 
-let accessToken: string | null = null;
-let tokenExpiry: number | null = null;
-
 async function getAccessToken() {
-    if (accessToken && tokenExpiry && Date.now() < tokenExpiry) {
-        return accessToken;
-    }
-
-    const basic = btoa(`${process.env.NEXT_PUBLIC_CLIENT_ID}:${process.env.NEXT_PUBLIC_CLIENT_SECRET}`);
+  const basic = Buffer.from(`${process.env.NEXT_PUBLIC_CLIENT_ID}:${process.env.NEXT_PUBLIC_CLIENT_SECRET}`).toString('base64');
+  
+  try {
     const response = await fetch(TOKEN_ENDPOINT, {
-        method: 'POST',
-        headers: {
-            Authorization: `Basic ${basic}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'grant_type=client_credentials',
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${basic}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=client_credentials',
     });
 
+    if (!response.ok) {
+      throw new Error('Failed to get access token');
+    }
+
     const data = await response.json();
-    accessToken = data.access_token;
-    tokenExpiry = Date.now() + (data.expires_in * 1000);
-    return accessToken;
+    return data.access_token;
+  } catch (error) {
+    console.error('Error getting Spotify access token:', error);
+    throw error;
+  }
 }
 
 export async function searchTracks(query: string) {
+  try {
     const token = await getAccessToken();
+    
     const response = await fetch(
-        `${SPOTIFY_API}/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
+      `${SPOTIFY_API_BASE}/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
-    return response.json();
-}
 
-export async function getRecommendations(seedTracks: string[]) {
-    const token = await getAccessToken();
-    const response = await fetch(
-        `${SPOTIFY_API}/recommendations?seed_tracks=${seedTracks.join(',')}&limit=10`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
-    return response.json();
+    if (!response.ok) {
+      throw new Error('Failed to search tracks');
+    }
+
+    const data = await response.json();
+    return data.tracks.items;
+  } catch (error) {
+    console.error('Error searching tracks:', error);
+    return [];
+  }
 }

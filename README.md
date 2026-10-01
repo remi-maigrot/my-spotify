@@ -1,5 +1,11 @@
 # MySpotify · Music search & recommendations
 
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Spotify API](https://img.shields.io/badge/Spotify_API-1DB954?style=flat-square&logo=spotify&logoColor=white)
+![MusicBrainz](https://img.shields.io/badge/MusicBrainz-BA478F?style=flat-square&logo=musicbrainz&logoColor=white)
+
 Next.js web app that searches tracks with the Spotify Web API, lets you build a playlist, and recommends new tracks with a rule-based scoring engine fed by artist metadata from MusicBrainz.
 Team project (3 contributors) built at Jönköping University.
 
